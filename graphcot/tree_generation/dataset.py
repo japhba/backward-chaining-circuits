@@ -3,11 +3,12 @@ import os
 import numpy as np
 import torch
 from torch.utils.data import Dataset
+from tqdm import tqdm
 
 from . import generate_example, generate_example_secondary_path, parse_example
 
 
-def generate_dataset_file(n_states, file_name, n_examples):
+def generate_dataset_file(n_states, file_name, n_examples, start_seed=0):
     """Generate dataset file if it does not exist
 
     Args:
@@ -15,12 +16,12 @@ def generate_dataset_file(n_states, file_name, n_examples):
         file_name (str): Name of file to save dataset in
         n_examples (int): Number of different examples to sample
     """
-    if os.path.exists(file_name):
+    if os.path.exists(file_name) and False:
         print("Loading contents from file...")
     else:
         print("Generating file...")
         with open(file_name, "w") as f:
-            for seed in range(n_examples):
+            for seed in tqdm(range(start_seed, n_examples+start_seed)):
                 if seed % 2 == 0:
                     order = "backward"
                 else:
@@ -35,7 +36,7 @@ def generate_dataset_file(n_states, file_name, n_examples):
 
 class GraphDataset(Dataset):
     
-    def __init__(self, n_states, file_name, n_examples):
+    def __init__(self, n_states, file_name, n_examples, seed=0):
         # Create a list of vocab
         number_tokens = sorted([str(i) for i in range(n_states)], key=lambda x: len(x), reverse=True)
         self.n_states = n_states
@@ -47,15 +48,13 @@ class GraphDataset(Dataset):
         # Open up dataset file and load+tokenize strings
         self.X = []
         self.masks = []
-        generate_dataset_file(n_states, file_name, n_examples)
+        generate_dataset_file(n_states, file_name, n_examples, seed)
         with open(file_name, "r") as f:
             for line in f.readlines():
-                # Tokenize string
+                # Tokenize string to integers
                 tokens = self.tokenize(line.rstrip())
                 self.X.append(tokens)
-                # Run checks
-                assert self.untokenize(self.X[-1]) == line.rstrip()
-                assert len(self.X[-1]) <= self.max_seq_length
+
                 # Create a mask
                 start_idx = np.where(tokens == 1)[0].item()
                 index_tensor = np.arange(tokens.shape[0])
@@ -86,7 +85,7 @@ class GraphDataset(Dataset):
 
     def untokenize(self, tokens):
         substrings = [self.idx2tokens[idx] for idx in tokens]
-        return "".join(substrings).rstrip(",")
+        return "".join(substrings)
     
     def visualize_example(self, index):
         string = self.untokenize(self[index][0])

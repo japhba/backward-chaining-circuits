@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import torch
 import tqdm.auto as tqdm_auto
 import transformer_lens.utils as tl_util
-from neel_plotly import imshow, line, scatter
+# from neel_plotly import imshow, line, scatter
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression, LogisticRegression
 from sklearn.metrics import accuracy_score, f1_score
