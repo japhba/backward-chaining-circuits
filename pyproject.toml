@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "graphcot"
+version = "1.0.0"
+description = "."
+authors = [
+
+]
+python-version = "3.10"
+license = "Apache-2.0"
+readme = "README.md"
+
+
+
+[tool.poetry.extras]
+test = ["pytest"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
