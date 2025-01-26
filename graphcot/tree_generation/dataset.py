@@ -16,7 +16,7 @@ def generate_dataset_file(n_states, file_name, n_examples, start_seed=0):
         file_name (str): Name of file to save dataset in
         n_examples (int): Number of different examples to sample
     """
-    if os.path.exists(file_name) and False:
+    if os.path.exists(file_name):
         print("Loading contents from file...")
     else:
         print("Generating file...")
